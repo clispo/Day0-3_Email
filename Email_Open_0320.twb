@@ -1,0 +1,818 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 20201.20.0219.0753                               -->
+<workbook original-version='18.1' source-build='2020.1.0 (20201.20.0219.0753)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <SheetIdentifierTracking />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='Email_Opens' inline='true' name='federated.0zpwe2g0yfe3xv13xxhz91k1yb0v' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='db-reporting.production.spokeo.com' name='redshift.0vhoh4u0081sij17bqrbu0hs3j78'>
+            <connection class='redshift' dbname='reporting' odbc-connect-string-extras='' one-time-sql='' port='5439' schema='public' server='db-reporting.production.spokeo.com' single-node='no' sslmode='' username='tableau' />
+          </named-connection>
+          <named-connection caption='marketingdb-ext.spokeo.com' name='mysql.1ya1q3a0oa3oyn1b8vm060xfgkop'>
+            <connection class='mysql' dbname='sp' odbc-native-protocol='' one-time-sql='' port='3306' server='marketingdb-ext.spokeo.com' source-charset='' username='tableau' />
+          </named-connection>
+        </named-connections>
+        <relation join='left' type='join'>
+          <clause type='join'>
+            <expression op='='>
+              <expression op='[custom sql query].[user_id]' />
+              <expression op='[Custom SQL Query1].[user_id_quota]' />
+            </expression>
+          </clause>
+          <relation join='inner' type='join'>
+            <clause type='join'>
+              <expression op='='>
+                <expression op='[custom sql query].[user_id]' />
+                <expression op='[Custom SQL Query].[user_id_intent]' />
+              </expression>
+            </clause>
+            <relation connection='redshift.0vhoh4u0081sij17bqrbu0hs3j78' name='custom sql query' type='text'>Select &#13;&#10;  Distinct&#13;&#10;    case&#13;&#10;      when t.device_type_added = &apos;Mobile&apos; then &apos;Mobile&apos;&#13;&#10;      else &apos;Desktop&apos; End as Device,&#13;&#10;    case&#13;&#10;      When cd.channel in (&apos;seo&apos;, &apos;fpd&apos;, &apos;direct&apos;) then &apos;SEO &amp; Direct&apos;&#13;&#10;      When cd.channel in (&apos;sem&apos;, &apos;display&apos;) then &apos;SEM &amp; GDN&apos;&#13;&#10;      Else &apos;Affiliate &amp; Others&apos;  &#13;&#10;      End as Channel, &#13;&#10;    t.card_type,&#13;&#10;    eb.type,&#13;&#10;    case when t.country = &apos;us&apos; then 1 else 0 end as is_us,&#13;&#10;    t.state,&#13;&#10;    t.email_domain,&#13;&#10;    t.user_id,&#13;&#10;    purchase_url.product,&#13;&#10;    case when purchase_url.Operating_System = &apos;IOS&apos; then 1 else 0 end as is_ios,&#13;&#10;    purchase_url.quality,&#13;&#10;    tbl_email.sent_time,&#13;&#10;    tbl_email.open_time,&#13;&#10;    s.created_at,&#13;&#10;    s.canceled_at,&#13;&#10;    Case &#13;&#10;      When s.canceled_at &lt;&lt;= dateadd(hour, 1, tbl_email.open_time) then 1&#13;&#10;      Else 0 End as Status&#13;&#10;    &#13;&#10;From    &#13;&#10;&#13;&#10;(&#13;&#10;Select &#13;&#10;  Distinct &#13;&#10;    job_1.Email_Type,&#13;&#10;    job_1.EmailName,&#13;&#10;    job_1.emailid,&#13;&#10;    job_1.jobid,&#13;&#10;    job_1.subscriberid,&#13;&#10;    dateadd(hour, 6, job_1.sent_time) as sent_time,&#13;&#10;    dateadd(hour, 6, tbl_open.eventdate) as open_time,&#13;&#10;    tbl_translation.userid as user_id&#13;&#10;      &#13;&#10;From&#13;&#10;&#13;&#10;(&#13;&#10;Select &#13;&#10;  job.*,&#13;&#10;  Case &#13;&#10;    When (&#13;&#10;         job.emailsubject = &apos;Welcome to Spokeo!&apos; &#13;&#10;      or job.emailname = &apos;ongoing_trial000a_v1_c2&apos; &#13;&#10;      or job.emailname = &apos;ongoing_trial000b_v1_c2&apos;  &#13;&#10;      or job.emailname = &apos;ongoing_trial000c_v1_c2&apos; &#13;&#10;      or job.emailname = &apos;ongoing_trial000d_v1_c2&apos; &#13;&#10;      or job.emailname = &apos;ongoing_trial000e_v2_c2&apos; &#13;&#10;          ) then &apos;Day 0&apos;&#13;&#10;    When job.emailname ilike &apos;%day3%&apos; then &apos;Day 3&apos;&#13;&#10;    When job.emailname ilike &apos;%prospects%&apos; then &apos;Prospect&apos; &#13;&#10;    When job.emailname ilike &apos;%android%&apos; then &apos;App Download&apos;&#13;&#10;    When job.emailname ilike &apos;%notifications%&apos; then &apos;Social Notification&apos;&#13;&#10;    When (job.category = &apos;blog_a&apos; or job.category = &apos;blog_b&apos;) then &apos;Blog&apos; &#13;&#10;    When job.emailname ilike &apos;%singlereport%&apos; then &apos;Single Report&apos; &#13;&#10;    Else &apos;Others&apos; End as Email_Type,&#13;&#10;  sent.subscriberid,&#13;&#10;  sent.eventdate as sent_time&#13;&#10;    &#13;&#10;From sfmc.dataview_job job &#13;&#10;inner join sfmc.dataview_sent sent on job.jobid = sent.jobid&#13;&#10;&#13;&#10;Where job.category != &apos;Test Send Emails&apos;&#13;&#10;  and job.schedtime between &apos;2019-07-17&apos; and &apos;2020-01-16&apos;&#13;&#10;  and sent.eventdate between &apos;2019-07-17&apos; and &apos;2020-01-16&apos;&#13;&#10;  and sent.Domain &lt;&lt;&gt;&gt; &apos;spokeo.com&apos;&#13;&#10;&#13;&#10;    ) job_1&#13;&#10;&#13;&#10;Inner join sfmc.dataview_spokeo_sfmc_id_translation tbl_translation&#13;&#10;on job_1.subscriberid = tbl_translation.subscriberid&#13;&#10;&#13;&#10;Inner Join&#13;&#10;&#13;&#10;(&#13;&#10;Select &#13;&#10;   jobid,&#13;&#10;   subscriberid,&#13;&#10;   min(eventdate) as eventdate&#13;&#10;    &#13;&#10;From &#13;&#10;     sfmc.dataview_open&#13;&#10;--      sfmc.dataview_click&#13;&#10;Where Domain &lt;&lt;&gt;&gt; &apos;spokeo.com&apos;&#13;&#10;  and eventdate between &apos;2019-07-17&apos; and &apos;2020-01-16&apos;&#13;&#10;  &#13;&#10;Group by &#13;&#10;   jobid,&#13;&#10;   subscriberid&#13;&#10;   &#13;&#10;    ) tbl_open&#13;&#10;    &#13;&#10;On tbl_open.jobid = job_1.jobid and tbl_open.subscriberid = job_1.subscriberid&#13;&#10;&#13;&#10;Where job_1.Email_Type = &apos;Day 0&apos;&#13;&#10;&#13;&#10;  ) tbl_email &#13;&#10;&#13;&#10;Inner Join subscriptions s on tbl_email.user_id = s.user_id &#13;&#10;       and (s.canceled_at is null or s.canceled_at &gt;&gt; tbl_email.open_time)&#13;&#10;       and s.subscription_description = &apos;1 Month (7DFT)&apos; and s.created_at &gt;&gt;= &apos;2019-07-16&apos;&#13;&#10;       &#13;&#10;Inner Join transactions t on tbl_email.user_id = t.user_id and t.transaction_type = &apos;Debit&apos; &#13;&#10;       and t.transaction_status = &apos;Approved&apos; and t.email_domain not like &apos;%spokeo%&apos; &#13;&#10;       and t.user_payment_number = 0 and t.transaction_date &gt;&gt;= &apos;2019-07-16&apos;&#13;&#10;       &#13;&#10;Inner Join campaign_definitions cd on t.campaign = cd.campaign&#13;&#10;&#13;&#10;Inner Join card_metadata.ext_binbase eb on t.card_iin = eb.bin and eb.year = &apos;2020&apos; and eb.month = &apos;03&apos;&#13;&#10;&#13;&#10;Inner Join &#13;&#10;&#13;&#10;            (&#13;&#10;                 Select &#13;&#10;                  hashed_user_id,&#13;&#10;                  case &#13;&#10;                    when product = 3 then &apos;phone&apos;&#13;&#10;                    when product = 6 then &apos;address&apos;&#13;&#10;                    when product in (4, 5) then &apos;email&apos;&#13;&#10;                    else &apos;name&apos; end as product,&#13;&#10;                  Case &#13;&#10;                     When ua_os in (&apos;Windows Phone&apos;, &apos;Unknown&apos;, &apos;Linux&apos;) then &apos;Android&apos; &#13;&#10;                     Else &apos;IOS&apos; &#13;&#10;                     End as Operating_System,&#13;&#10;                  quality&#13;&#10;  &#13;&#10;                 from purchase_urls_view &#13;&#10;                where created_at between &apos;2019-07-16&apos; and &apos;2020-01-17&apos;&#13;&#10;&#13;&#10;                  ) purchase_url&#13;&#10;&#13;&#10;on func_sha1(tbl_email.user_id) = purchase_url.hashed_user_id</relation>
+            <relation connection='mysql.1ya1q3a0oa3oyn1b8vm060xfgkop' name='Custom SQL Query' type='text'>SELECT &#13;&#10;&#9;distinct &#13;&#10;&#9;&#9;cbl.user_id AS user_id_intent,&#13;&#10;&#9;&#9;cbl.category AS intent&#13;&#10;&#9;&#9;&#13;&#10;FROM&#13;&#10;&#13;&#10;(&#13;&#10;SELECT &#13;&#10;&#9;tbl_new.user_id,&#13;&#10;&#9;tbl_new.new_code,&#13;&#10;&#9;c.category AS &apos;Category&apos;,&#13;&#10;&#9;case c.category&#13;&#10;&#9;&#9;when &apos;family&apos; then tbl_new.family&#13;&#10;&#9;&#9;when &apos;friends&apos; then tbl_new.friends&#13;&#10;&#9;&#9;when &apos;relationships&apos; then tbl_new.relationships&#13;&#10;&#9;&#9;when &apos;contacts&apos; then tbl_new.contacts&#13;&#10;&#9;&#9;when &apos;self&apos; then tbl_new.self&#13;&#10;&#9;&#9;when &apos;unknown_phone&apos; then tbl_new.unknown_phone&#13;&#10;&#9;&#9;when &apos;friends_family&apos; then tbl_new.friends_family&#13;&#10;&#9;&#9;when &apos;infidelity&apos; then tbl_new.infidelity&#13;&#10;&#9;&#9;when &apos;scams_fraud&apos; then tbl_new.scams_fraud&#13;&#10;&#9;&#9;when &apos;screen_dates&apos; then tbl_new.screen_dates&#13;&#10;&#9;&#9;when &apos;crim_neighbors&apos; then tbl_new.crim_neighbors&#13;&#10;&#9;&#9;when &apos;crim_buyers&apos; then tbl_new.crim_buyers&#9;&#9;&#13;&#10;&#9;&#9;when &apos;crim_dating&apos; then tbl_new.crim_dating&#13;&#10;&#9;&#9;when &apos;crim_identity&apos; then tbl_new.crim_identity&#13;&#10;&#9;&#9;when &apos;other&apos; then tbl_new.other&#9;&#13;&#10;&#13;&#10;&#9;END AS &apos;Value&apos;&#13;&#10;&#9;&#13;&#10;&#9;from&#13;&#10;&#13;&#10;(&#13;&#10;SELECT &#13;&#10;&#9;ano.user_id,&#13;&#10;&#9;ano.response_code,&#13;&#10;&#9;LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;) AS new_code,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Family,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 2), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Friends,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 3), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Relationships,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 4), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Self,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 5), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Contacts,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 6), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Unknown_Phone,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 7), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Friends_Family,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 8), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Infidelity,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 9), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Scams_Fraud,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 10), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Screen_Dates,&#9;&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 16), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Crim_Neighbors,&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 17), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Crim_Buyers,&#9;&#9;&#9;&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 18), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Crim_Dating,&#9;&#13;&#10;&#9;Case &#13;&#10;&#9;&#9;When LEFT(RIGHT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 19), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Crim_Identity,&#13;&#10;   Case &#13;&#10;&#9;&#9;When LEFT(LPAD(CONV(ano.response_code, 10, 2),31,&apos;0&apos;), 1) = 1 then 1&#13;&#10;&#9;&#9;ELSE 0 END AS Other&#9;&#9;&#9;&#9;&#9;&#9;&#13;&#10;from&#13;&#10;(&#13;&#10;SELECT&#13;&#10;&#9;ps.user_id,&#13;&#10;&#9;MAX(ps.created_at) AS create_time&#13;&#10;&#9;&#13;&#10;FROM premium_survey_responses ps INNER JOIN purchase_urls pu &#13;&#10;ON ps.user_id = pu.user_id&#13;&#10;WHERE ps.survey_type = 1 AND ps.created_at between &apos;2019-07-16&apos; and &apos;2020-01-17&apos;&#13;&#10;GROUP BY ps.user_id&#13;&#10;) tbl&#13;&#10;&#13;&#10;INNER JOIN sp.premium_survey_responses ano&#13;&#10;ON tbl.user_id = ano.user_id AND tbl.create_time = ano.created_at&#13;&#10;&#13;&#10;INNER JOIN campaign_conversions cc &#13;&#10;ON tbl.user_id = cc.user_id &#13;&#10;&#13;&#10;WHERE ano.survey_type = 1 AND ano.created_at between &apos;2019-07-16&apos; and &apos;2020-01-17&apos;&#13;&#10;  AND cc.created_at between &apos;2019-07-16&apos; and &apos;2020-01-17&apos;&#13;&#10;  &#13;&#10;) tbl_new&#13;&#10;&#13;&#10;CROSS JOIN &#13;&#10;(&#13;&#10;SELECT &apos;family&apos; AS category&#13;&#10;UNION ALL SELECT &apos;friends&apos;&#13;&#10;UNION ALL SELECT &apos;relationships&apos;&#13;&#10;UNION ALL SELECT &apos;contacts&apos;&#13;&#10;UNION ALL SELECT &apos;self&apos;&#13;&#10;UNION ALL SELECT &apos;unknown_phone&apos;&#13;&#10;UNION ALL SELECT &apos;friends_family&apos;&#13;&#10;UNION ALL SELECT &apos;infidelity&apos;&#13;&#10;UNION ALL SELECT &apos;scams_fraud&apos;&#13;&#10;UNION ALL SELECT &apos;screen_dates&apos;&#13;&#10;UNION ALL SELECT &apos;crim_neighbors&apos;&#13;&#10;UNION ALL SELECT &apos;crim_buyers&apos;&#13;&#10;UNION ALL SELECT &apos;crim_dating&apos;&#13;&#10;UNION ALL SELECT &apos;crim_identity&apos;&#13;&#10;UNION ALL SELECT &apos;other&apos;&#13;&#10;) c&#13;&#10;&#13;&#10;&#9;&#9;) cbl&#13;&#10;&#9;&#9;&#13;&#10;&#13;&#10;WHERE cbl.VALUE = 1</relation>
+          </relation>
+          <relation connection='mysql.1ya1q3a0oa3oyn1b8vm060xfgkop' name='Custom SQL Query1' type='text'>SELECT&#13;&#10;&#9;Distinct &#13;&#10;&#9;pq.user_id as user_id_quota,&#13;&#10;&#9;case when COUNT(DISTINCT pq.url) &gt;&gt; 30 then 30&#13;&#10;             else COUNT(DISTINCT pq.url) end AS quota&#13;&#10;&#9;&#13;&#10;FROM profile_quota_views pq INNER JOIN campaign_conversions cc &#13;&#10;&#9;&#13;&#10;&#9;ON pq.user_id = cc.user_id &#13;&#10;&#9;WHERE pq.account_id IS NULL &#13;&#10;&#9;  AND pq.created_at BETWEEN cc.created_at AND ADDTIME(cc.created_at, &apos;1:00:00&apos;)&#13;&#10;&#9;  AND cc.created_at BETWEEN &apos;2019-07-16&apos; AND &apos;2020-01-17&apos; &#13;&#10;&#13;&#10;GROUP BY &#13;&#10;&#9;pq.user_id</relation>
+        </relation>
+        <metadata-records>
+          <metadata-record class='column'>
+            <remote-name>device</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[device]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>device</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>6</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>channel</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[channel]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>channel</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>12</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>card_type</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[card_type]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>card_type</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>255</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>type</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[type]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>type</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>32</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>is_us</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[is_us]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>is_us</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <precision>10</precision>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_INTEGER&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SLONG&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>state</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[state]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>state</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>255</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>email_domain</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[email_domain]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>email_domain</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>255</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>user_id</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[user_id]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>user_id</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <precision>10</precision>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_INTEGER&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SLONG&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>product</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[product]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>product</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>5</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>is_ios</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[is_ios]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>is_ios</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <precision>10</precision>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_INTEGER&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SLONG&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>quality</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[quality]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>quality</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>256</width>
+            <contains-null>true</contains-null>
+            <cast-to-local-type>true</cast-to-local-type>
+            <collation flag='0' name='binary' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WLONGVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>sent_time</remote-name>
+            <remote-type>7</remote-type>
+            <local-name>[sent_time]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>sent_time</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>datetime</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_TYPE_TIMESTAMP&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_TYPE_TIMESTAMP&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>open_time</remote-name>
+            <remote-type>7</remote-type>
+            <local-name>[open_time]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>open_time</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>datetime</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_TYPE_TIMESTAMP&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_TYPE_TIMESTAMP&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>created_at</remote-name>
+            <remote-type>7</remote-type>
+            <local-name>[created_at]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>created_at</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>datetime</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_TYPE_TIMESTAMP&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_TYPE_TIMESTAMP&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>canceled_at</remote-name>
+            <remote-type>7</remote-type>
+            <local-name>[canceled_at]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>canceled_at</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>datetime</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_TYPE_TIMESTAMP&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_TYPE_TIMESTAMP&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>status</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[status]</local-name>
+            <parent-name>[custom sql query]</parent-name>
+            <remote-alias>status</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <precision>10</precision>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_INTEGER&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SLONG&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>user_id_intent</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[user_id_intent]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>user_id_intent</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_INTEGER&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SLONG&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>intent</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[intent]</local-name>
+            <parent-name>[Custom SQL Query]</parent-name>
+            <remote-alias>intent</remote-alias>
+            <ordinal>19</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <width>14</width>
+            <contains-null>false</contains-null>
+            <collation charset='290' flag='1' name='LROOT_S2' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_WVARCHAR&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_WCHAR&quot;</attribute>
+              <attribute datatype='string' name='TypeIsVarchar'>&quot;true&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>user_id_quota</remote-name>
+            <remote-type>3</remote-type>
+            <local-name>[user_id_quota]</local-name>
+            <parent-name>[Custom SQL Query1]</parent-name>
+            <remote-alias>user_id_quota</remote-alias>
+            <ordinal>21</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_INTEGER&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SLONG&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>quota</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[quota]</local-name>
+            <parent-name>[Custom SQL Query1]</parent-name>
+            <remote-alias>quota</remote-alias>
+            <ordinal>22</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;SQL_BIGINT&quot;</attribute>
+              <attribute datatype='string' name='DebugWireType'>&quot;SQL_C_SBIGINT&quot;</attribute>
+            </attributes>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
+        <calculation class='tableau' formula='1' />
+      </column>
+      <column aggregation='Sum' datatype='integer' name='[cancel_status]' role='dimension' type='ordinal' />
+      <column datatype='string' name='[state]' role='dimension' semantic-role='[State].[Name]' type='nominal' />
+      <drill-paths>
+        <drill-path name='country, state'>
+          <field>[state]</field>
+        </drill-path>
+      </drill-paths>
+      <extract count='-1' enabled='true' units='records'>
+        <connection access_mode='readonly' authentication='auth-none' author-locale='en_US' class='hyper' dbname='C:/Users/cli/Documents/My Tableau Repository/Datasources/Email_Open_features.hyper' default-settings='yes' schema='Extract' sslmode='' tablename='Extract' update-time='03/22/2020 09:20:42 PM' username='tableau_internal_user'>
+          <relation name='Extract' table='[Extract].[Extract]' type='table' />
+          <refresh>
+            <refresh-event add-from-file-path='Email_Opens' increment-value='%null%' refresh-type='create' rows-inserted='191967' timestamp-start='2020-03-22 21:20:42.372' />
+          </refresh>
+          <metadata-records>
+            <metadata-record class='column'>
+              <remote-name>device</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[device]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>device</remote-alias>
+              <ordinal>0</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>channel</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[channel]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>channel</remote-alias>
+              <ordinal>1</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>3</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>card_type</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[card_type]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>card_type</remote-alias>
+              <ordinal>2</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>4</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>type</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[type]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>type</remote-alias>
+              <ordinal>3</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>is_us</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[is_us]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>is_us</remote-alias>
+              <ordinal>4</ordinal>
+              <family>custom sql query</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>state</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[state]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>state</remote-alias>
+              <ordinal>5</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>112</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>email_domain</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[email_domain]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>email_domain</remote-alias>
+              <ordinal>6</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1838</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>user_id</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[user_id]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>user_id</remote-alias>
+              <ordinal>7</ordinal>
+              <family>custom sql query</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>150651</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>product</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[product]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>product</remote-alias>
+              <ordinal>8</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>4</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>is_ios</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[is_ios]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>is_ios</remote-alias>
+              <ordinal>9</ordinal>
+              <family>custom sql query</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>quality</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[quality]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>quality</remote-alias>
+              <ordinal>10</ordinal>
+              <family>custom sql query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>16</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='binary' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>sent_time</remote-name>
+              <remote-type>135</remote-type>
+              <local-name>[sent_time]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>sent_time</remote-alias>
+              <ordinal>11</ordinal>
+              <family>custom sql query</family>
+              <local-type>datetime</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>29272</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>open_time</remote-name>
+              <remote-type>135</remote-type>
+              <local-name>[open_time]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>open_time</remote-alias>
+              <ordinal>12</ordinal>
+              <family>custom sql query</family>
+              <local-type>datetime</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>150651</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>created_at</remote-name>
+              <remote-type>135</remote-type>
+              <local-name>[created_at]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>created_at</remote-alias>
+              <ordinal>13</ordinal>
+              <family>custom sql query</family>
+              <local-type>datetime</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>150651</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>canceled_at</remote-name>
+              <remote-type>135</remote-type>
+              <local-name>[canceled_at]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>canceled_at</remote-alias>
+              <ordinal>14</ordinal>
+              <family>custom sql query</family>
+              <local-type>datetime</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>129055</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>status</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[status]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>status</remote-alias>
+              <ordinal>15</ordinal>
+              <family>custom sql query</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>user_id_intent</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[user_id_intent]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>user_id_intent</remote-alias>
+              <ordinal>16</ordinal>
+              <family>Custom SQL Query</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>150651</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>intent</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[intent]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>intent</remote-alias>
+              <ordinal>17</ordinal>
+              <family>Custom SQL Query</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>8</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='1' name='LROOT_S2' />
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>user_id_quota</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[user_id_quota]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>user_id_quota</remote-alias>
+              <ordinal>18</ordinal>
+              <family>Custom SQL Query1</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>133883</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>quota</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[quota]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>quota</remote-alias>
+              <ordinal>19</ordinal>
+              <family>Custom SQL Query1</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>66</approx-count>
+              <contains-null>true</contains-null>
+            </metadata-record>
+          </metadata-records>
+        </connection>
+      </extract>
+      <layout dim-ordering='alphabetic' dim-percentage='0.658015' measure-ordering='alphabetic' measure-percentage='0.341985' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Sheet 1'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Email_Opens' name='federated.0zpwe2g0yfe3xv13xxhz91k1yb0v' />
+          </datasources>
+          <datasource-dependencies datasource='federated.0zpwe2g0yfe3xv13xxhz91k1yb0v'>
+            <column caption='SUM([quota])/COUNTD([user_id])' datatype='real' name='[Calculation_873416884162383872]' role='measure' type='quantitative' user:unnamed='Sheet 1'>
+              <calculation class='tableau' formula='SUM([quota])/COUNTD([user_id])' />
+            </column>
+            <column aggregation='Sum' datatype='integer' name='[cancel_status]' role='dimension' type='ordinal' />
+            <column-instance column='[cancel_status]' derivation='None' name='[none:cancel_status:ok]' pivot='key' type='ordinal' />
+            <column datatype='integer' name='[quota]' role='measure' type='quantitative' />
+            <column datatype='integer' name='[user_id]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_873416884162383872]' derivation='User' name='[usr:Calculation_873416884162383872:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <text column='[federated.0zpwe2g0yfe3xv13xxhz91k1yb0v].[usr:Calculation_873416884162383872:qk]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-labels-show' value='true' />
+                <format attr='mark-labels-cull' value='true' />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>[federated.0zpwe2g0yfe3xv13xxhz91k1yb0v].[none:cancel_status:ok]</rows>
+        <cols />
+      </table>
+      <simple-id uuid='{EDDC1228-5A62-4967-B620-6FD9732A331B}' />
+    </worksheet>
+  </worksheets>
+  <windows saved-dpi-scale-factor='1.5' source-height='44'>
+    <window class='worksheet' maximized='true' name='Sheet 1'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='38'>
+            <card type='columns' />
+          </strip>
+          <strip size='38'>
+            <card type='rows' />
+          </strip>
+          <strip size='30'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.0zpwe2g0yfe3xv13xxhz91k1yb0v].[none:cancel_status:ok]</field>
+          </color-one-way>
+        </highlight>
+      </viewpoint>
+      <simple-id uuid='{2FFCD1D0-CD01-4D15-9932-CB27204BE296}' />
+    </window>
+  </windows>
+  <thumbnails>
+    <thumbnail height='74' name='Sheet 1' width='164'>
+      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
+    </thumbnail>
+  </thumbnails>
+</workbook>
